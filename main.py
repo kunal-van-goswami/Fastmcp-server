@@ -1,48 +1,150 @@
-from fastmcp import FastMCP
-import random
-import json
+﻿from fastmcp import FastMCP
+import os
+import aiosqlite
+import tempfile
 
-#create the fastmcp server instance
-mcp = FastMCP("Simple Calculator Server")
+TEMP_DIR = tempfile.gettempdir()
+DB_PATH = os.path.join(TEMP_DIR, "expenses.db")
+CATEGORIES_PATH = os.path.join(os.path.dirname(__file__), "categories.json")
 
-#tool:Add two numbers
-@mcp.tool
-def add(a:int, b:int) -> int:
-    """Add two numbers
-    Args:
-        a (int): The first number
-        b (int): The second number
-    Returns:
-        int: The sum of the two numbers
-    """
-    return a + b
-  
-#tool: Generate a randonuer
-@mcp.tool
-def random_number(min:int =1,max:int =100)->int:
-    """Generate a random number between min and maxuv 
-    Args:
-        min (int): The minimum number
-        max (int): The maximum number
-    Returns:
-        int: A random number between min and max
-    """
-    return random.randint(min, max)
-  
-#Resource:Server infortion
-@mcp.resource("info://server")
-def server_info()->str:
-  """ Get infortion about this server"""
-  info = {
-    "name": "Simple Calculator Server",
-    "version": "1.0",
-    "description": "A simple calculator server that can add two numbers and generate random numbers",
-    "tools": ["add", "random_number"],
-    "author":"your Name"
-  }
-  return json.dumps(info,indent=4)
+print(f"Database path: {DB_PATH}")
 
-#start the server
+mcp = FastMCP(name="Expense Tracker")
+
+
+async def init_db():
+    """Initialize the SQLite database."""
+    async with aiosqlite.connect(DB_PATH) as conn:
+        await conn.execute("PRAGMA journal_mode=WAL")
+
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS expenses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                description TEXT NOT NULL,
+                amount REAL NOT NULL,
+                date TEXT NOT NULL,
+                category TEXT,
+                subcategory TEXT,
+                note TEXT
+            )
+        """)
+
+        await conn.commit()
+
+
+@mcp.tool()
+async def add_expense(
+    date: str,
+    amount: float,
+    description: str,
+    category: str,
+    subcategory: str = "",
+    note: str = ""
+):
+    """Add a new expense entry to the database."""
+
+    async with aiosqlite.connect(DB_PATH) as conn:
+        cursor = await conn.execute(
+            """
+            INSERT INTO expenses
+            (description, amount, date, category, subcategory, note)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (description, amount, date, category, subcategory, note)
+        )
+
+        await conn.commit()
+
+        expense_id = cursor.lastrowid
+
+    return {
+        "status": "ok",
+        "id": expense_id
+    }
+
+
+@mcp.tool()
+async def list_expenses(
+    start_date: str,
+    end_date: str
+):
+    """List all expense entries within a date range."""
+
+    async with aiosqlite.connect(DB_PATH) as conn:
+        conn.row_factory = aiosqlite.Row
+
+        cursor = await conn.execute(
+            """
+            SELECT
+                id,
+                date,
+                amount,
+                description,
+                category,
+                subcategory,
+                note
+            FROM expenses
+            WHERE date BETWEEN ? AND ?
+            ORDER BY date ASC
+            """,
+            (start_date, end_date)
+        )
+
+        rows = await cursor.fetchall()
+
+    return [dict(row) for row in rows]
+
+
+@mcp.tool()
+async def summarize(
+    start_date: str,
+    end_date: str,
+    category: str = None
+):
+    """Summarize expenses by category and subcategory."""
+
+    async with aiosqlite.connect(DB_PATH) as conn:
+        conn.row_factory = aiosqlite.Row
+
+        query = """
+            SELECT
+                category,
+                subcategory,
+                SUM(amount) AS total_amount
+            FROM expenses
+            WHERE date BETWEEN ? AND ?
+        """
+
+        params = [start_date, end_date]
+
+        if category:
+            query += " AND category = ?"
+            params.append(category)
+
+        query += """
+            GROUP BY category, subcategory
+            ORDER BY total_amount ASC
+        """
+
+        cursor = await conn.execute(query, params)
+        rows = await cursor.fetchall()
+
+    return [dict(row) for row in rows]
+
+
+async def main():
+    # Initialize database before starting MCP server
+    await init_db()
+
+    # Start FastMCP server
+    await mcp.run_async(
+        transport="http",
+        host="0.0.0.0",
+        port=8000
+    )
+
+
 if __name__ == "__main__":
-    mcp.run(transport="http", host="0.0.0.0", port=8000)
-    
+    import asyncio
+
+    asyncio.run(main())

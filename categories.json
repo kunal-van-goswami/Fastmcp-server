@@ -1,0 +1,152 @@
+{
+  "categories": [
+    {
+      "name": "Food & Dining",
+      "subcategories": [
+        "Groceries",
+        "Restaurants",
+        "Cafes & Coffee",
+        "Fast Food",
+        "Takeaway & Delivery",
+        "Snacks & Beverages",
+        "Work Lunch"
+      ]
+    },
+    {
+      "name": "Transport",
+      "subcategories": [
+        "Fuel",
+        "Public Transport",
+        "Taxi & Cab",
+        "Auto Rickshaw",
+        "Flight",
+        "Train",
+        "Parking",
+        "Vehicle Maintenance",
+        "Toll"
+      ]
+    },
+    {
+      "name": "Housing",
+      "subcategories": [
+        "Rent",
+        "Electricity",
+        "Water",
+        "Internet",
+        "Gas",
+        "Maintenance & Repairs",
+        "Furniture",
+        "Household Supplies"
+      ]
+    },
+    {
+      "name": "Health & Medical",
+      "subcategories": [
+        "Doctor Consultation",
+        "Medicines",
+        "Lab Tests",
+        "Hospital",
+        "Dental",
+        "Eyecare",
+        "Health Insurance",
+        "Gym & Fitness"
+      ]
+    },
+    {
+      "name": "Shopping",
+      "subcategories": [
+        "Clothing",
+        "Footwear",
+        "Electronics",
+        "Accessories",
+        "Online Shopping",
+        "Personal Care",
+        "Books & Stationery",
+        "Gifts"
+      ]
+    },
+    {
+      "name": "Entertainment",
+      "subcategories": [
+        "Movies & OTT",
+        "Events & Concerts",
+        "Gaming",
+        "Sports",
+        "Hobbies",
+        "Subscriptions"
+      ]
+    },
+    {
+      "name": "Education",
+      "subcategories": [
+        "Tuition & Courses",
+        "Books & Materials",
+        "Exam Fees",
+        "Workshops & Seminars",
+        "Software & Tools",
+        "Coaching"
+      ]
+    },
+    {
+      "name": "Finance",
+      "subcategories": [
+        "Loan EMI",
+        "Credit Card Payment",
+        "Insurance Premium",
+        "Investments",
+        "Bank Charges",
+        "Tax Payment"
+      ]
+    },
+    {
+      "name": "Travel",
+      "subcategories": [
+        "Hotel & Accommodation",
+        "Local Transport",
+        "Sightseeing",
+        "Travel Insurance",
+        "Visa & Documents",
+        "Meals on Travel"
+      ]
+    },
+    {
+      "name": "Business & Work",
+      "subcategories": [
+        "Office Supplies",
+        "Client Entertainment",
+        "Software & Subscriptions",
+        "Advertising",
+        "Freelance Services",
+        "Equipment"
+      ]
+    },
+    {
+      "name": "Personal Care",
+      "subcategories": [
+        "Haircut & Salon",
+        "Skincare",
+        "Spa & Wellness",
+        "Cosmetics"
+      ]
+    },
+    {
+      "name": "Donations & Charity",
+      "subcategories": [
+        "Religious Donations",
+        "NGO & Charity",
+        "Crowdfunding",
+        "Gifts to Family"
+      ]
+    },
+    {
+      "name": "Miscellaneous",
+      "subcategories": [
+        "ATM Withdrawal",
+        "Pet Care",
+        "Laundry",
+        "Postage & Courier",
+        "Other"
+      ]
+    }
+  ]
+}
