@@ -1,4 +1,5 @@
 ﻿from fastmcp import FastMCP
+from contextlib import asynccontextmanager
 import os
 import aiosqlite
 import tempfile
@@ -92,7 +93,8 @@ async def list_expenses(
 
         rows = await cursor.fetchall()
 
-    return [dict(row) for row in rows]
+    #return [dict(row) for row in rows]
+    
 
 
 @mcp.tool()
@@ -128,8 +130,20 @@ async def summarize(
 
         cursor = await conn.execute(query, params)
         rows = await cursor.fetchall()
+ 
+    if not rows:
+        return {
+            "status": "ok",
+            "message": "No expenses found for this date range.",
+            "expenses": []
+        }
 
-    return [dict(row) for row in rows]
+    return {
+        "status": "ok",
+        "count": len(rows),
+        "expenses": [dict(row) for row in rows]
+    }
+    #return [dict(row) for row in rows]
 
 
 async def main():
